@@ -5,9 +5,30 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, SafeAreaVie
 const logo = require('../../../assets/SIRMEsinfondo.png');
 const backgrund = require('../../../assets/SIRMEfondo.png');
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import app from '../../../firebase.config';
 
 function Register() {
+    const [email, setEmail] = useState('');  // Asegúrate de tener un estado para el email
+    const [password, setPassword] = useState('');  // Asegúrate de tener un estado para la contraseña
     const [secureTextEntry, setSecureTextEntry] = useState(true);
+    const navigation = useNavigation();
+
+    const handleSignUp = () => {
+        const auth = getAuth(app);
+        createUserWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                // Signed up 
+                const user = userCredential.user;
+                console.log(user);
+                navigation.navigate('Login');
+            })
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                // gestionar errores
+            });
+    };
 
     return (
         <SafeAreaView style={styles.container}>
@@ -21,18 +42,28 @@ function Register() {
                         <Text style={styles.buttonTextSlide}>REGISTRO</Text>
                     </View>
                 </View>
+                
+
                 <Text style={styles.title}>Registrarme</Text>
+
                 <Text style={styles.text}>Nombre Completo</Text>
                 <TextInput style={styles.input} />
 
                 <Text style={styles.text}>Correo electrónico</Text>
-                <TextInput style={styles.input} keyboardType="email-address" />
+                <TextInput
+                    style={styles.input}
+                    keyboardType="email-address"
+                    value={email}
+                    onChangeText={setEmail}
+                />
 
                 <Text style={styles.text}>Contraseña</Text>
                 <View style={styles.passwordContainer}>
                     <TextInput
                         style={styles.inputPassword}
                         secureTextEntry={secureTextEntry}
+                        value={password}
+                        onChangeText={setPassword}
                     />
                     <TouchableOpacity
                         style={styles.eyeButton}
@@ -41,10 +72,10 @@ function Register() {
                         <Ionicons name={secureTextEntry ? 'eye-off' : 'eye'} size={24} color="grey" />
                     </TouchableOpacity>
                 </View>
-                <TouchableOpacity style={styles.button}>
+                <TouchableOpacity style={styles.button} onPress={handleSignUp}>
                     <Text style={styles.buttonText}>Aceptar</Text>
                 </TouchableOpacity>
-                
+
             </View>
         </SafeAreaView>
     )
@@ -124,14 +155,16 @@ const styles = StyleSheet.create({
         borderRadius: 100,
         marginBottom: 10,
         marginTop: 10,
+        position: 'relative',
     },
     loginSlideLeft: {
         backgroundColor: '#b80f00',
-        right: 0,
-        width: "50%",
+        right: 0, // Cambiado de 'right' a 'left'
+        width: "55%",
         height: "100%",
         borderRadius: 100,
         justifyContent: 'center',
+        position: 'absolute',
     },
     buttonTextSlide: {
         color: 'white',

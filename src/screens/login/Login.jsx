@@ -5,11 +5,37 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, SafeAreaVie
 const logo = require('../../../assets/SIRMEsinfondo.png');
 const backgrund = require('../../../assets/SIRMEfondo.png');
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { useDispatch } from 'react-redux';
+import { setUser } from '../../logic/Redux/reducers/AuthReducer';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function Login() {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const [secureTextEntry, setSecureTextEntry] = useState(true);
 
     const navigation = useNavigation();
+    const dispatch = useDispatch();
+
+    const handleLogin = async () => {
+        const auth = getAuth();
+        try {
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            const user = {
+                email: userCredential.user.email,
+                uid: userCredential.user.uid,
+            };
+
+            await AsyncStorage.setItem('user', JSON.stringify(user));
+
+            dispatch(setUser(user));
+
+            console.log('Usuario ha iniciado sesión y guardado:', user);
+        } catch (error) {
+            console.error('Error al iniciar sesión:', error.message);
+        }
+    };
 
     const handleRegisterPress = () => {
         navigation.navigate('Register');
@@ -29,12 +55,18 @@ function Login() {
                 </View>
                 <Text style={styles.title}>Inicia sesión</Text>
                 <Text style={styles.text}>Correo electrónico</Text>
-                <TextInput style={styles.input} keyboardType="email-address" />
+                <TextInput 
+                    style={styles.input} 
+                    keyboardType="email-address"
+                    value={email}
+                    onChangeText={setEmail} />
                 <Text style={styles.text}>Contraseña</Text>
                 <View style={styles.passwordContainer}>
                     <TextInput
                         style={styles.inputPassword}
                         secureTextEntry={secureTextEntry}
+                        value={password}
+                        onChangeText={setPassword}
                     />
                     <TouchableOpacity
                         style={styles.eyeButton}
@@ -43,7 +75,7 @@ function Login() {
                         <Ionicons name={secureTextEntry ? 'eye-off' : 'eye'} size={24} color="grey" />
                     </TouchableOpacity>
                 </View>
-                <TouchableOpacity style={styles.button}>
+                <TouchableOpacity style={styles.button} onPress={handleLogin}>
                     <Text style={styles.buttonText}>Ingresar</Text>
                 </TouchableOpacity>
                 <View style={styles.registerContainer}>
@@ -54,11 +86,9 @@ function Login() {
                         </Text>
                     </Text>
                 </View>
-
             </View>
         </SafeAreaView>
     )
-
 }
 
 const styles = StyleSheet.create({
@@ -139,7 +169,7 @@ const styles = StyleSheet.create({
     loginSlideLeft: {
         backgroundColor: '#b80f00',
         left: 0,
-        width: "50%",
+        width: "55%",
         height: "100%",
         borderRadius: 100,
         justifyContent: 'center',

@@ -7,6 +7,8 @@ import { useDispatch, useSelector } from "react-redux";
 import Login from '../screens/login/Login';
 import Register from '../screens/register/Register';
 import { restoreSession } from './Redux/actions/authActions';
+import HomeStackScreen from './Stacks/HomeStack';
+import Foundation from "react-native-vector-icons/Foundation";
 
 const TabsStack = createBottomTabNavigator();
 const AuthStack = createStackNavigator();
@@ -28,37 +30,18 @@ const MainFlow = () => (
             }
         }}
     >
-        {/* <TabsStack.Screen 
+        <TabsStack.Screen 
         name="Home" 
         component={HomeStackScreen}
         options={{
           tabBarLabel: "Noticicas",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="newspaper-outline" color={color} size={size} />
+            <Foundation name="home" color={color} size={size} />
           ),
         }}
         
-      />
-      <TabsStack.Screen 
-        name="Radio" 
-        component={Radio} 
-        options={{
-          tabBarLabel: "Radio",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="play-outline" color={color} size={size} />
-          ),
-        }}
-      />
-      <TabsStack.Screen 
-        name="Perfil" 
-        component={Perfil} 
-        options={{
-          tabBarLabel: "Perfil",
-          tabBarIcon: ({ color, size }) => (
-            <Feater name="user" color={color} size={size} />
-          ),
-        }}
-      /> */}
+        />
+      
     </TabsStack.Navigator>
 );
 
