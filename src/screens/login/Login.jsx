@@ -9,6 +9,8 @@ import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { useDispatch } from 'react-redux';
 import { setUser } from '../../logic/Redux/reducers/AuthReducer';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from "axios";
+import { SERVER_HOST } from '../../../serverHost';
 
 function Login() {
     const [email, setEmail] = useState('');
@@ -18,24 +20,36 @@ function Login() {
     const navigation = useNavigation();
     const dispatch = useDispatch();
 
-    const handleLogin = async () => {
-        const auth = getAuth();
-        try {
-            const userCredential = await signInWithEmailAndPassword(auth, email, password);
-            const user = {
-                email: userCredential.user.email,
-                uid: userCredential.user.uid,
-            };
+    const auth = getAuth();
 
-            await AsyncStorage.setItem('user', JSON.stringify(user));
-
-            dispatch(setUser(user));
-
-            console.log('Usuario ha iniciado sesión y guardado:', user);
-        } catch (error) {
-            console.error('Error al iniciar sesión:', error.message);
-        }
+    const handleLogin = () => {
+        const emailTrimmed = email.toLowerCase().trim();
+        setEmail(emailTrimmed);
+    
+        console.log(emailTrimmed, password);
+    
+        signInWithEmailAndPassword(auth, emailTrimmed, password)
+            .then(() => {
+                console.log('Usuario ha iniciado sesión con Firebase');
+                axios.post(`${SERVER_HOST}/api/auth/loginFirebase`, {
+                    email: emailTrimmed, 
+                })
+                .then(response => {
+                    console.log('Usuario registrado en MongoDB:', response.data);
+                    AsyncStorage.setItem('user', JSON.stringify(response.data));
+                    dispatch(setUser(response.data));
+                })
+                .catch(error => {
+                    console.error('Error al iniciar sesión en MongoDB:', error);
+                });
+            })
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                console.error('Error de Firebase:', errorCode, errorMessage);
+            });
     };
+    
 
     const handleRegisterPress = () => {
         navigation.navigate('Register');
@@ -115,7 +129,7 @@ const styles = StyleSheet.create({
     },
     input: {
         height: 40,
-        marginBottom: 35,
+        marginBottom: 20,
         borderWidth: 1,
         borderColor: '#ccc',
         paddingHorizontal: 10,
@@ -127,7 +141,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderRadius: 100,
         height: "13%",
-        marginTop: 10,
         justifyContent: 'center',
     },
     buttonText: {
@@ -163,8 +176,8 @@ const styles = StyleSheet.create({
         height: "13%",
         backgroundColor: '#dbd0d0',
         borderRadius: 100,
-        marginBottom: 10,
-        marginTop: 10,
+        marginBottom: 5,
+        marginTop: 5,
     },
     loginSlideLeft: {
         backgroundColor: '#b80f00',
@@ -184,7 +197,7 @@ const styles = StyleSheet.create({
         color: 'black',
         fontSize: 22,
         fontWeight: '600',
-        marginVertical: 25,
+        marginVertical: 20,
         textAlign: 'center',
     },
     passwordContainer: {

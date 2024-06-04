@@ -1,37 +1,52 @@
 
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, SafeAreaView } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, SafeAreaView, ScrollView } from 'react-native';
 const logo = require('../../../assets/SIRMEsinfondo.png');
 const backgrund = require('../../../assets/SIRMEfondo.png');
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import app from '../../../firebase.config';
+import { SERVER_HOST } from '../../../serverHost';
+import axios from "axios";
 
 function Register() {
-    const [email, setEmail] = useState('');  // Asegúrate de tener un estado para el email
-    const [password, setPassword] = useState('');  // Asegúrate de tener un estado para la contraseña
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [username, setUsername] = useState(''); 
     const [secureTextEntry, setSecureTextEntry] = useState(true);
     const navigation = useNavigation();
 
-    const handleSignUp = () => {
-        const auth = getAuth(app);
-        createUserWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                // Signed up 
-                const user = userCredential.user;
-                console.log(user);
+const handleSignUp = () => {
+    const auth = getAuth(app);
+    setEmail(email.toLowerCase().trim());
+    createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+            const user = userCredential.user;
+            console.log(user);
+
+            axios.post(`${SERVER_HOST}/api/auth/registerFirebase`, {
+                email: user.email, 
+                username: username ,
+            }).then(response => {
+                console.log('Usuario registrado en MongoDB:', response.data);
                 navigation.navigate('Login');
-            })
-            .catch((error) => {
-                const errorCode = error.code;
-                const errorMessage = error.message;
-                // gestionar errores
+            }).catch(error => {
+                console.error('Error registrando usuario en MongoDB:', error);
             });
-    };
+
+        })
+        .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.error('Error de Firebase:', errorCode, errorMessage);
+        });
+};
+
 
     return (
         <SafeAreaView style={styles.container}>
+
             <Image source={backgrund} style={styles.backGround} />
             <View style={styles.logoContainer}>
                 <Image source={logo} resizeMode="resize" style={{ width: '100%', height: 300 }} />
@@ -47,7 +62,11 @@ function Register() {
                 <Text style={styles.title}>Registrarme</Text>
 
                 <Text style={styles.text}>Nombre Completo</Text>
-                <TextInput style={styles.input} />
+                <TextInput 
+                    style={styles.input} 
+                    value={username}
+                    onChangeText={setUsername}
+                />
 
                 <Text style={styles.text}>Correo electrónico</Text>
                 <TextInput
@@ -72,14 +91,14 @@ function Register() {
                         <Ionicons name={secureTextEntry ? 'eye-off' : 'eye'} size={24} color="grey" />
                     </TouchableOpacity>
                 </View>
+
                 <TouchableOpacity style={styles.button} onPress={handleSignUp}>
                     <Text style={styles.buttonText}>Aceptar</Text>
                 </TouchableOpacity>
 
             </View>
         </SafeAreaView>
-    )
-
+    );
 }
 
 const styles = StyleSheet.create({
@@ -106,7 +125,7 @@ const styles = StyleSheet.create({
     },
     input: {
         height: 40,
-        marginBottom: 10,
+        marginBottom: 7,
         borderWidth: 1,
         borderColor: '#ccc',
         paddingHorizontal: 10,
@@ -114,10 +133,9 @@ const styles = StyleSheet.create({
     },
     button: {
         backgroundColor: '#b80f00',
-        padding: 10,
         alignItems: 'center',
         borderRadius: 100,
-        height: "13%",
+        height: "12%",
         justifyContent: 'center',
     },
     buttonText: {
@@ -176,7 +194,7 @@ const styles = StyleSheet.create({
         color: 'black',
         fontSize: 22,
         fontWeight: '600',
-        marginVertical: 25,
+        marginVertical: 15,
         textAlign: 'center',
     },
     passwordContainer: {
@@ -195,7 +213,6 @@ const styles = StyleSheet.create({
         height: 40,
         borderWidth: 1,
         borderColor: '#ccc',
-        paddingHorizontal: 10,
         borderRadius: 10,
         paddingRight: 50,
     },

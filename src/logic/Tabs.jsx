@@ -9,6 +9,8 @@ import Register from '../screens/register/Register';
 import { restoreSession } from './Redux/actions/authActions';
 import HomeStackScreen from './Stacks/HomeStack';
 import Foundation from "react-native-vector-icons/Foundation";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { clearUser } from './Redux/reducers/AuthReducer';
 
 const TabsStack = createBottomTabNavigator();
 const AuthStack = createStackNavigator();
@@ -52,8 +54,9 @@ const Tabs = () => {
         dispatch(restoreSession());
     }, [dispatch]);
 
-    const user = useSelector((state) => state.auth.user);
     // AsyncStorage.clear()
+    // dispatch(clearUser());
+    const user = useSelector((state) => state.auth.user);
 
     return (
         <NavigationContainer>
