@@ -8,9 +8,12 @@ import Login from '../screens/login/Login';
 import Register from '../screens/register/Register';
 import { restoreSession } from './Redux/actions/authActions';
 import HomeStackScreen from './Stacks/HomeStack';
-import Foundation from "react-native-vector-icons/Foundation";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { clearUser } from './Redux/reducers/AuthReducer';
+import Pedidos from '../screens/pedidos/Pedidos';
+import Algo from '../screens/algo';
 
 const TabsStack = createBottomTabNavigator();
 const AuthStack = createStackNavigator();
@@ -36,9 +39,33 @@ const MainFlow = () => (
         name="Home" 
         component={HomeStackScreen}
         options={{
-          tabBarLabel: "Noticicas",
+          tabBarLabel: "Articulos",
           tabBarIcon: ({ color, size }) => (
-            <Foundation name="home" color={color} size={size} />
+            <MaterialIcons name="article" color={color} size={size} />
+          ),
+        }}
+        
+        />
+
+    <TabsStack.Screen 
+        name="Pedidos" 
+        component={Pedidos}
+        options={{
+          tabBarLabel: "Pedidos",
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="truck-delivery-outline" color={color} size={size} />
+          ),
+        }}
+        
+        />
+
+<TabsStack.Screen 
+        name="Log Out" 
+        component={Algo}
+        options={{
+          tabBarLabel: "LogOut",
+          tabBarIcon: ({ color, size }) => (
+            <MaterialIcons name="logout" color={color} size={size} />
           ),
         }}
         

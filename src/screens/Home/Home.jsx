@@ -1,15 +1,17 @@
 import { FlatList, Image, SafeAreaView, StyleSheet, Text, View, TouchableOpacity } from "react-native";
-import { articles } from "../../logic/mocks/articles";
 const logo = require('../../../assets/SIRMEEdit.png');
 import { Ionicons } from '@expo/vector-icons'; 
 import { SERVER_HOST } from "../../../serverHost";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { agregarArticulo } from "../../logic/Redux/reducers/articleReducer";
+import { useNavigation } from "@react-navigation/native";
+import { useDispatch } from "react-redux";
 
 function Home() {
   
   const [data, setData] = useState(null);
-
+  const dispatch = useDispatch();
   const articulos = async () => {
     try {
       const response = await axios.get(`${SERVER_HOST}/api/articulos/articulos`);
@@ -23,6 +25,8 @@ function Home() {
   }
   };
 
+  const navigation = useNavigation();
+
   useEffect(() => {
     articulos();
   }, []);
@@ -32,7 +36,9 @@ function Home() {
       <Text className="text-lg font-semibold">{item.nombre_articulo}</Text>
       <Text className="text-sm">{item.descripcion_articulo}</Text>
       <Text className="text-lg font-semibold">${item.precioUnitario}</Text>
-      <TouchableOpacity className="bg-blue-500 text-white p-2 rounded">
+      <TouchableOpacity 
+        className="bg-blue-500 text-white p-2 rounded"
+        onPress={() => dispatch(agregarArticulo(item))}>
         <Text>Agregar</Text>
       </TouchableOpacity>
     </View>
@@ -47,7 +53,9 @@ function Home() {
           style={{ height: 100, width: 100, left: 10}}
         />
         <TouchableOpacity
-          className="mr-5">
+          className="mr-5"
+          onPress={() => navigation.navigate('Carrito')}
+        >
           <Ionicons name="cart-outline" size={30} 
             color="white" />
         </TouchableOpacity>
