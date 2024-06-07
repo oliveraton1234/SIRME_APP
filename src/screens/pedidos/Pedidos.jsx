@@ -70,3 +70,50 @@ function Pedidos() {
         </SafeAreaView>
     );
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+    },
+    itemContainer: {
+        padding: 20,
+        borderBottomWidth: 1,
+        borderBottomColor: '#ccc',
+    },
+    itemTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    nonBoldText: {
+        fontSize: 18,
+        fontWeight: 'normal', // Esto asegura que el texto no esté en negrita
+    },
+    boldText: {
+        fontWeight: 'bold',
+        fontSize: 18,
+    },
+    normalText: {
+        fontWeight: 'normal',
+        fontSize: 18,
+    },
+    itemText: {
+        fontSize: 18, // Ajusta el tamaño de la fuente según necesites
+        fontWeight: 'normal', // Esto asegura que el texto no esté en negrita
+    },
+    articuloDetail: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 5,
+    },
+    articuloName: {
+        fontSize: 16,
+    },
+    emptyText: {
+        textAlign: 'center',
+        marginTop: 20,
+        fontSize: 16,
+    }
+});
+
+export default Pedidos;

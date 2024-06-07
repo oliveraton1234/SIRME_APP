@@ -1,3 +1,3 @@
 
 
-export const SERVER_HOST = "http://175.1.34.206:9595"
+export const SERVER_HOST = "http://192.168.0.58:9595"
